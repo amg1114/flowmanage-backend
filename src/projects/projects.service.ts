@@ -36,7 +36,25 @@ export class ProjectsService {
      * Retrieves all projects.
      * @returns A promise that resolves to an array of projects.
      */
-    findAll(): Promise<Project[]> { return this.projectsRepository.find(); }
+    findAll(): Promise<Project[]> {
+        return this.projectsRepository.find();
+    }
+
+    /**
+     * Retrieves a project by its id.
+     * @param id - The project id.
+     * @returns A promise that resolves to the project.
+     * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
+     */
+    async findById(id: number): Promise<Project> {
+        const project = await this.projectsRepository.findOne({ where: { id } });
+
+        if (!project) {
+            throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+        }
+
+        return project;
+    }
 
     /**
      * Retrieves a project by its slug.
