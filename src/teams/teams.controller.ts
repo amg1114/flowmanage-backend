@@ -10,31 +10,31 @@ export class TeamsController {
 
   @Post()
   create(@Body() createTeamDto: CreateTeamDto) {
-    return this.teamsService.create(createTeamDto);
+    return this.teamsService.createTeam(createTeamDto);
   }
 
   @Post('members')
   addMember(@Body() addMemberDto: AddMemberDto) {
-    return this.teamsService.addMember(addMemberDto);
+    return this.teamsService.addTeamMember(addMemberDto);
   }
 
   @Get()
   findAll() {
-    return this.teamsService.findAll();
+    return this.teamsService.findAllTeams();
   }
 
   @Get(':slug')
   findOne(@Param('slug') slug: string) {
-    return this.teamsService.findOne(slug);
+    return this.teamsService.findOneTeam(slug);
   }
 
   @Patch(':slug')
   update(@Param('slug') slug: string, @Body() updateTeamDto: UpdateTeamDto) {
-    return this.teamsService.update(slug, updateTeamDto);
+    return this.teamsService.updateTeam(slug, updateTeamDto);
   }
 
   @Delete(':slug')
   remove(@Param('slug') slug: string) {
-    return this.teamsService.remove(slug);
+    return this.teamsService.deleteTeam(slug);
   }
 }

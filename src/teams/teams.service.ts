@@ -17,7 +17,7 @@ export class TeamsService {
     private readonly usersService: UsersService
   ) { }
 
-  async create(createTeamDto: CreateTeamDto) {
+  async createTeam(createTeamDto: CreateTeamDto) {
     const slug = slugify(createTeamDto.name, { lower: true });
     const team = await this.teamRepository.findOne({ where: { slug } });
     if (team) {
@@ -26,11 +26,11 @@ export class TeamsService {
     return this.teamRepository.save({ ...createTeamDto, slug });
   }
 
-  findAll() {
-    return this.teamRepository.find({relations: ['members']});
+  findAllTeams() {
+    return this.teamRepository.find({ relations: ['members'] });
   }
 
-  async findOne(slug: string): Promise<Team> {
+  async findOneTeam(slug: string): Promise<Team> {
     const team = await this.teamRepository.findOne({ where: { slug } });
     if (!team) {
       throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
@@ -38,33 +38,33 @@ export class TeamsService {
     return team;
   }
 
-  async update(slug: string, updateTeamDto: UpdateTeamDto): Promise<UpdateResult> {
-    const team = await this.teamRepository.update(slug, updateTeamDto);
-    if (team.affected === 0) {
+  async updateTeam(slug: string, updateTeamDto: UpdateTeamDto): Promise<UpdateResult> {
+    const team = await this.teamRepository.findOne({ where: { slug } });
+    if (!team) {
       throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
     }
-    return team;
+    return this.teamRepository.update(team.id, updateTeamDto);
   }
 
-  async remove(slug: string): Promise<DeleteResult> {
-    const team = await this.teamRepository.delete(slug);
-    if (team.affected === 0) {
+  async deleteTeam(slug: string): Promise<DeleteResult> {
+    const team = await this.teamRepository.findOne({ where: { slug } });
+    if (!team) {
       throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
-
     }
-    return team;
+
+    return this.teamRepository.delete(team.id);
   }
 
   // Members related methods
-  async addMember({ teamId, userId }: AddMemberDto) {
-    const team = await this.teamRepository.findOne({ where: { id: teamId }, relations: ['members']});
+  async addTeamMember({ teamId, userId }: AddMemberDto) {
+    const team = await this.teamRepository.findOne({ where: { id: teamId }, relations: ['members'] });
     const user = await this.usersService.findOne(userId);
-    
+
     if (!team) {
       throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
-    }else if (!user) {
+    } else if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    
+
     }
     const member = team.members.find((member) => member.id === userId);
     if (member) {
