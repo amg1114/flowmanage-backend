@@ -10,6 +10,6 @@ export class User extends BaseEntity {
     @Column()
     password: string;
 
-    @ManyToMany(()=> Team, team => team.members)
+    @ManyToMany(()=> Team, team => team.members, { onDelete: 'CASCADE'})
     teams: Team[];
 }

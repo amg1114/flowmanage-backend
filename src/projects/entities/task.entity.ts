@@ -14,6 +14,6 @@ export class Task extends BaseEntity {
     @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.PENDING})
     status: TaskStatus;
 
-    @ManyToOne(()=> Project, project => project.tasks)
+    @ManyToOne(()=> Project, project => project.tasks, { onDelete: 'CASCADE'})
     project: Project;
 }
