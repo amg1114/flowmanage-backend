@@ -15,7 +15,7 @@ export class Project extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @OneToMany(()=> Task, task => task.project)
+  @OneToMany(()=> Task, task => task.project, { cascade: true })
   tasks: Task[];
 
   @ManyToOne(()=> Team, team => team.projects)
