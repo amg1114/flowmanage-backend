@@ -3,7 +3,7 @@ import { Entity, Column, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { BaseEntity } from "../../common/base.entity";
 
 import { User } from "src/users/entities/user.entity";
-import { Project } from "src/projects/project.entity";
+import { Project } from "src/projects/entities/project.entity";
 
 @Entity('teams')
 export class Team extends BaseEntity {
