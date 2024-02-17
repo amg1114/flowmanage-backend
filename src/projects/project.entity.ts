@@ -1,7 +1,8 @@
-import { Entity, Column, OneToMany } from "typeorm";
+import { Entity, Column, OneToMany, ManyToOne } from "typeorm";
 
 import { BaseEntity } from "../common/base.entity";
 import { Request } from "src/requests/request.entity";
+import { Team } from "src/teams/entities/team.entity";
 
 @Entity('projects')
 export class Project extends BaseEntity {
@@ -16,4 +17,7 @@ export class Project extends BaseEntity {
 
   @OneToMany(()=> Request, request => request.project)
   requests: Request[];
+
+  @ManyToOne(()=> Team, team => team.projects)
+  team: Team;
 }

@@ -1,6 +1,9 @@
-import { Entity, Column, ManyToMany, JoinTable } from "typeorm";
+import { Entity, Column, ManyToMany, JoinTable, OneToMany } from "typeorm";
+
 import { BaseEntity } from "../../common/base.entity";
+
 import { User } from "src/users/entities/user.entity";
+import { Project } from "src/projects/project.entity";
 
 @Entity('teams')
 export class Team extends BaseEntity {
@@ -16,4 +19,7 @@ export class Team extends BaseEntity {
     @ManyToMany(() => User, user => user.teams)
     @JoinTable()
     members: User[];
+
+    @OneToMany(()=> Project, project => project.team)
+    projects: Project[];
 }
