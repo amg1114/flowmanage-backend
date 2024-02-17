@@ -1,7 +1,6 @@
-import { Entity, Column, OneToMany, ManyToOne } from "typeorm";
+import { Entity, Column, ManyToOne } from "typeorm";
 
-import { BaseEntity } from "../common/base.entity";
-import { Request } from "src/requests/request.entity";
+import { BaseEntity } from "../../common/base.entity";
 import { Team } from "src/teams/entities/team.entity";
 
 @Entity('projects')
@@ -14,9 +13,6 @@ export class Project extends BaseEntity {
 
   @Column({ type: 'text', nullable: true })
   description: string;
-
-  @OneToMany(()=> Request, request => request.project)
-  requests: Request[];
 
   @ManyToOne(()=> Team, team => team.projects)
   team: Team;
