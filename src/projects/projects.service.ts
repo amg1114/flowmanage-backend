@@ -2,17 +2,27 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { Task } from './entities/task.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 /**
  * Service responsible for managing projects.
  */
 export class ProjectsService {
-    constructor(@InjectRepository(Project) private readonly projectsRepository: Repository<Project>) {
+    constructor(
+        @InjectRepository(Project)
+        private readonly projectsRepository: Repository<Project>,
+        @InjectRepository(Task)
+        private readonly tasksRepository: Repository<Task>
+    ) {
     }
+
+    // Porject CRUD operations
 
     /**
      * Creates a new project.
@@ -63,7 +73,7 @@ export class ProjectsService {
      * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
      */
     async findProjectBySlug(slug: string): Promise<Project> {
-        const project = await this.projectsRepository.findOne({ where: { slug } });
+        const project = await this.projectsRepository.findOne({ where: { slug }, relations: ['tasks'] });
 
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
@@ -104,4 +114,47 @@ export class ProjectsService {
         await this.projectsRepository.delete({ slug });
         return project;
     }
+
+    // Project tasks operations
+
+    async createTask(slug: string, taskFields: CreateTaskDto): Promise<Task> {
+        const project = await this.findProjectBySlug(slug);
+        const newTask = this.tasksRepository.create({ ...taskFields, project });
+
+        return this.tasksRepository.save(newTask);
+    }
+
+    async findProjectTasks(slug: string): Promise<Task[]> {
+        const project = await this.findProjectBySlug(slug);
+
+        return project.tasks;
+    }
+
+    async findTaskById(id: number): Promise<Task> {
+        const task = await this.tasksRepository.findOne({ where: { id } });
+
+        if (!task) {
+            throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+        }
+
+        return task;
+    }
+
+    async updateTask(projectId: number, taskId: number, taskFields: UpdateTaskDto): Promise<UpdateResult> {
+        const task = await this.tasksRepository.findOne({ where: { id: taskId, project: { id: projectId } } });
+        if (!task) {
+            throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+        }
+        return this.tasksRepository.update({ id: taskId }, taskFields);
+    }
+
+    async deleteTask(id: number): Promise<DeleteResult> {
+        const task = await this.tasksRepository.delete(id);
+        if (task.affected === 0) {
+            throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+        }
+
+        return task;
+    }
 }
+
