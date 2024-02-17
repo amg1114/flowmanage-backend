@@ -10,27 +10,27 @@ export class ProjectsController {
     }
 
     @Get()
-    async findAll() {
-        return this.projectsService.findAll();
+    async findAllProjects() {
+        return this.projectsService.findAllProjects();
     }
 
     @Get(':slug')
-    async findBySlug(@Param('slug') slug: string) {
-        return this.projectsService.findBySlug(slug);
+    async findProjectBySlug(@Param('slug') slug: string) {
+        return this.projectsService.findProjectBySlug(slug);
     }
 
     @Post()
-    async create(@Body() projectFields: CreateProjectDto) {
-        return this.projectsService.create(projectFields);
+    async createProject(@Body() projectFields: CreateProjectDto) {
+        return this.projectsService.createProject(projectFields);
     }
 
     @Patch(':slug')
-    async update(@Param('slug') slug: string, @Body() projectFields: UpdateProjectDto) {
-        return this.projectsService.update(slug, projectFields);
+    async updateProject(@Param('slug') slug: string, @Body() projectFields: UpdateProjectDto) {
+        return this.projectsService.updateProject(slug, projectFields);
     }
 
     @Delete(':slug')
-    async delete(@Param('slug') slug: string) {
-        return this.projectsService.delete(slug);
+    async deleteProject(@Param('slug') slug: string) {
+        return this.projectsService.deleteProject(slug);
     }
 }

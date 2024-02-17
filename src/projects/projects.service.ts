@@ -20,7 +20,7 @@ export class ProjectsService {
      * @returns A promise that resolves to the created project.
      * @throws HttpException with HttpStatus.CONFLICT if the project already exists.
      */
-    async create(project: CreateProjectDto): Promise<Project> {
+    async createProject(project: CreateProjectDto): Promise<Project> {
         const slug = slugify(project.title, { lower: true });
         const projectExists = await this.projectsRepository.findOne({ where: { slug } });
 
@@ -36,7 +36,7 @@ export class ProjectsService {
      * Retrieves all projects.
      * @returns A promise that resolves to an array of projects.
      */
-    findAll(): Promise<Project[]> {
+    findAllProjects(): Promise<Project[]> {
         return this.projectsRepository.find();
     }
 
@@ -46,7 +46,7 @@ export class ProjectsService {
      * @returns A promise that resolves to the project.
      * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
      */
-    async findById(id: number): Promise<Project> {
+    async findProjectById(id: number): Promise<Project> {
         const project = await this.projectsRepository.findOne({ where: { id } });
 
         if (!project) {
@@ -62,7 +62,7 @@ export class ProjectsService {
      * @returns A promise that resolves to the project.
      * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
      */
-    async findBySlug(slug: string): Promise<Project> {
+    async findProjectBySlug(slug: string): Promise<Project> {
         const project = await this.projectsRepository.findOne({ where: { slug } });
 
         if (!project) {
@@ -79,7 +79,7 @@ export class ProjectsService {
      * @returns A promise that resolves to the updated project.
      * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
      */
-    async update(slug: string, project: UpdateProjectDto): Promise<UpdateResult> {
+    async updateProject(slug: string, project: UpdateProjectDto): Promise<UpdateResult> {
         const projectExists = await this.projectsRepository.findOne({ where: { slug } });
         if (!projectExists) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
@@ -95,7 +95,7 @@ export class ProjectsService {
      * @returns A promise that resolves to the deleted project.
      * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
      */
-    async delete(slug: string): Promise<Project> {
+    async deleteProject(slug: string): Promise<Project> {
         const project = await this.projectsRepository.findOne({ where: { slug } });
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
