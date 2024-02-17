@@ -30,24 +30,24 @@ export class TeamsService {
     return this.teamRepository.find({relations: ['members']});
   }
 
-  async findOne(id: number): Promise<Team> {
-    const team = await this.teamRepository.findOne({ where: { id } });
+  async findOne(slug: string): Promise<Team> {
+    const team = await this.teamRepository.findOne({ where: { slug } });
     if (!team) {
       throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
     }
     return team;
   }
 
-  async update(id: number, updateTeamDto: UpdateTeamDto): Promise<UpdateResult> {
-    const team = await this.teamRepository.update(id, updateTeamDto);
+  async update(slug: string, updateTeamDto: UpdateTeamDto): Promise<UpdateResult> {
+    const team = await this.teamRepository.update(slug, updateTeamDto);
     if (team.affected === 0) {
       throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
     }
     return team;
   }
 
-  async remove(id: number): Promise<DeleteResult> {
-    const team = await this.teamRepository.delete(id);
+  async remove(slug: string): Promise<DeleteResult> {
+    const team = await this.teamRepository.delete(slug);
     if (team.affected === 0) {
       throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
 
