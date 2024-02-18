@@ -17,29 +17,17 @@ export class AccessGuard implements CanActivate {
 
         const isAdmin = user.roles.includes('ADMIN');
 
-        if (isAdmin) {
-            console.log("Passing through as admin");
-
-            return true;
-        }
+        if (isAdmin) return true;
 
         const params = context.switchToHttp().getRequest().params;
         if (params.slug) {
             let isMember = false;
 
             if (request.url.includes('teams')) {
-                console.log(user.teams);
-                
                 isMember = user.teams.some((team: Team) => team.slug === params.slug);
-                if (isMember) {
-                    console.log("Passing through as team member");
-                }
             } else if (request.url.includes('projects')) {
                 const project: Project = await this.projectsService.findProjectBySlug(params.slug);
                 isMember = user.teams.some((team: Team) => team.id === project.team.id);
-                if (isMember) {
-                    console.log("Passing through as project team member");
-                }
             }
 
             return isMember;
