@@ -9,9 +9,17 @@ import { DataSourceConfig } from './config/data.source';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { TeamsModule } from './teams/teams.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), TypeOrmModule.forRoot(DataSourceConfig), ProjectsModule, UsersModule, TeamsModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot(DataSourceConfig),
+    ProjectsModule,
+    UsersModule,
+    TeamsModule,
+    AuthModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
