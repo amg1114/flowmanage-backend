@@ -17,7 +17,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     email: string;
 
 
-    @IsEnum(Role)
+    @IsEnum(Role, { each: true })
     @IsOptional()
     roles?: Role[];
     

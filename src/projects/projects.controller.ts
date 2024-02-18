@@ -5,24 +5,25 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/common/enums/user-roles';
+import { ProjectsGuard } from 'src/auth/guards/project.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('projects')
-@UseGuards(RolesGuard)
+@UseGuards(RolesGuard, ProjectsGuard)
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService) {
     }
 
     // Project CRUD operations
-    @Roles(Role.ADMIN)
     @Get()
+    @Roles(Role.ADMIN)
     async findAllProjects() {
         return this.projectsService.findAllProjects();
     }
 
-    @Roles()
     @Get(':slug')
     async findProjectBySlug(@Param('slug') slug: string) {
         return this.projectsService.findProjectBySlug(slug);
@@ -33,13 +34,13 @@ export class ProjectsController {
     async createProject(@Body() projectFields: CreateProjectDto) {
         return this.projectsService.createProject(projectFields);
     }
-    
+
     @Roles(Role.ADMIN, Role.MANAGER)
     @Patch(':slug')
     async updateProject(@Param('slug') slug: string, @Body() projectFields: UpdateProjectDto) {
         return this.projectsService.updateProject(slug, projectFields);
     }
-    
+
     @Roles(Role.ADMIN)
     @Delete(':slug')
     async deleteProject(@Param('slug') slug: string) {
@@ -63,7 +64,7 @@ export class ProjectsController {
     async updateTask(@Param('taskId') projectId: number, @Param('taskId') taskId: number, @Body() taskFields: UpdateTaskDto) {
         return this.projectsService.updateTask(projectId, taskId, taskFields);
     }
-    
+
     @Roles(Role.ADMIN, Role.MANAGER)
     @Delete('tasks/:taskId')
     async deleteTask(@Param('taskId') id: number) {

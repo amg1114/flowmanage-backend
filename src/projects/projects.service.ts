@@ -73,7 +73,7 @@ export class ProjectsService {
      * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
      */
     async findProjectBySlug(slug: string): Promise<Project> {
-        const project = await this.projectsRepository.findOne({ where: { slug }, relations: ['tasks'] });
+        const project = await this.projectsRepository.findOne({ where: { slug }, relations: ['tasks', 'team'] });
 
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
