@@ -8,11 +8,11 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/common/enums/user-roles';
-import { ProjectsGuard } from 'src/auth/guards/project.guard';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('projects')
-@UseGuards(RolesGuard, ProjectsGuard)
+@UseGuards(RolesGuard, AccessGuard)
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService) {
     }
@@ -59,7 +59,7 @@ export class ProjectsController {
         return this.projectsService.createTask(slug, taskFields);
     }
 
-    @Roles(Role.ADMIN, Role.MANAGER)
+    @Roles(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE)
     @Patch(':slug/tasks/:taskId')
     async updateTask(@Param('taskId') projectId: number, @Param('taskId') taskId: number, @Body() taskFields: UpdateTaskDto) {
         return this.projectsService.updateTask(projectId, taskId, taskFields);

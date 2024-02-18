@@ -6,9 +6,10 @@ import { AddMemberDto } from './dto/add-member.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/common/enums/user-roles';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 
 @Controller('teams')
-@UseGuards(RolesGuard)
+@UseGuards(RolesGuard, AccessGuard)
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
@@ -30,7 +31,7 @@ export class TeamsController {
     return this.teamsService.findAllTeams();
   }
   
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE)
   @Get(':slug')
   findOne(@Param('slug') slug: string) {
     return this.teamsService.findOneTeam(slug);
