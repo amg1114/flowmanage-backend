@@ -19,7 +19,7 @@ export class User extends BaseEntity {
     @Column()
     password: string;
 
-    @Column({type: 'enum', enum: Role, array: true, default: [Role.Employee]})
+    @Column({type: 'enum', enum: Role, array: true, default: [Role.EMPLOYEE]})
     roles: Role[];
 
     @ManyToMany(()=> Team, team => team.members, { onDelete: 'CASCADE'})
