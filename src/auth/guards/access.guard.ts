@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { Role } from "src/common/enums/user-roles";
 
 import { Project } from "src/projects/entities/project.entity";
 import { ProjectsService } from "src/projects/projects.service";
@@ -15,7 +16,7 @@ export class AccessGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const user = context.switchToHttp().getRequest().user;
 
-        const isAdmin = user.roles.includes('ADMIN');
+        const isAdmin = user.roles.includes(Role.ADMIN);
 
         if (isAdmin) return true;
 
@@ -32,7 +33,8 @@ export class AccessGuard implements CanActivate {
 
             return isMember;
         }
-
+        console.log('AccessGuard', user.roles);
+        
         return false;
     }
 }
