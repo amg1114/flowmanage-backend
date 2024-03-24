@@ -23,7 +23,7 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepository.find({ relations: ['teams'] });
+    return this.userRepository.find();
   }
 
   async findOne(id: number) {
