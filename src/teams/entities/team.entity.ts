@@ -12,6 +12,7 @@ import { BaseEntity } from '../../common/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Project } from 'src/projects/entities/project.entity';
 import { Workflow } from 'src/workflows/entities/workflow.entity';
+import { TeamsToUsers } from './teams-to-users.entity';
 
 @Entity('teams')
 export class Team extends BaseEntity {
@@ -24,13 +25,12 @@ export class Team extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @ManyToMany(() => User, (user) => user.teams)
-  @JoinTable()
-  members: User[];
+  @OneToMany(() => TeamsToUsers, (teamToUsers) => teamToUsers.team)
+  teamsToUsers: TeamsToUsers[];
 
   @ManyToOne(() => Workflow, (workflow) => workflow.teams)
   workflow: Workflow;
-  
+
   @OneToMany(() => Project, (project) => project.team)
   projects: Project[];
 }

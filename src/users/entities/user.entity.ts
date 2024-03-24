@@ -5,6 +5,7 @@ import { Role } from 'src/common/enums/user-roles';
 import { Exclude } from 'class-transformer';
 import { Workflow } from 'src/workflows/entities/workflow.entity';
 import { WorkflowToManagers } from 'src/workflows/entities/workflow-manager.entity';
+import { TeamsToUsers } from 'src/teams/entities/teams-to-users.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -27,6 +28,6 @@ export class User extends BaseEntity {
   )
   workflowsToManagers: WorkflowToManagers[];
 
-  @ManyToMany(() => Team, (team) => team.members, { onDelete: 'CASCADE' })
-  teams: Team[];
+  @OneToMany(() => TeamsToUsers, (teamsToUsers) => teamsToUsers.user)
+  teamsToUsers: TeamsToUsers[];
 }

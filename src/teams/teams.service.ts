@@ -57,21 +57,6 @@ export class TeamsService {
 
   // Members related methods
   async addTeamMember({ teamId, userId }: AddMemberDto) {
-    const team = await this.teamRepository.findOne({ where: { id: teamId }, relations: ['members'] });
-    const user = await this.usersService.findOne(userId);
-
-    if (!team) {
-      throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
-    } else if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-
-    }
-    const member = team.members.find((member) => member.id === userId);
-    if (member) {
-      throw new HttpException('User already a member of the team', HttpStatus.CONFLICT);
-    }
-
-    team.members.push(user);
-    return this.teamRepository.save(team);
+    // To Do
   }
 }
