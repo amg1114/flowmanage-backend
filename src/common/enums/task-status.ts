@@ -1,5 +1,5 @@
-export enum TaskStatus {
-    PENDING = 'pending',
-    IN_DEVELOP = 'in_develop',
+export enum StatusState {
+    UNSTARTED = 'unstarted',
+    STARTED = 'started',
     COMPLETED = 'completed',
 }

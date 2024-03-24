@@ -1,7 +1,7 @@
-import { TaskStatus } from "src/common/enums/task-status";
 import { Project } from "./project.entity";
 import { BaseEntity } from "src/common/base.entity";
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Status } from "src/workflows/entities/status.entity";
+import { Column, Entity, ManyToOne, OneToOne } from "typeorm";
 
 @Entity('tasks')
 export class Task extends BaseEntity {
@@ -10,10 +10,10 @@ export class Task extends BaseEntity {
     
     @Column({ type: 'text', nullable: true})
     description: string;
-    
-    @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.PENDING})
-    status: TaskStatus;
 
     @ManyToOne(()=> Project, project => project.tasks, { onDelete: 'CASCADE'})
     project: Project;
+
+    @ManyToOne(()=>Status, status=>status.tasks)
+    status: Status
 }

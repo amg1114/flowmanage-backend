@@ -1,5 +1,4 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { TaskStatus } from "../../common/enums/task-status";
+import { IsOptional, IsString } from "class-validator";
 
 export class UpdateTaskDto {
     @IsString()
@@ -9,8 +8,4 @@ export class UpdateTaskDto {
     @IsString()
     @IsOptional()
     description?: string;
-
-    @IsEnum(TaskStatus)
-    @IsOptional()
-    status?: TaskStatus;
 }
