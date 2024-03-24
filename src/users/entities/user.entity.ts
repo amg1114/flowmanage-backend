@@ -1,27 +1,35 @@
-import { Column, Entity, ManyToMany } from "typeorm";
-import { BaseEntity } from "../../common/base.entity";
-import { Team } from "src/teams/entities/team.entity";
-import { Role } from "src/common/enums/user-roles";
-import { Exclude } from "class-transformer";
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../common/base.entity';
+import { Team } from 'src/teams/entities/team.entity';
+import { Role } from 'src/common/enums/user-roles';
+import { Exclude } from 'class-transformer';
+import { Workflow } from 'src/workflows/entities/workflow.entity';
+import { WorkflowToManagers } from 'src/workflows/entities/workflow-manager.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
-    @Column()
-    firstName: string;
-    
-    @Column()
-    lastName: string;
+  @Column()
+  firstName: string;
 
-    @Column({unique: true})
-    email: string;
+  @Column()
+  lastName: string;
 
-    @Exclude()
-    @Column()
-    password: string;
+  @Column({ unique: true })
+  email: string;
 
-    @Column({type: 'enum', enum: Role, array: true, default: [Role.EMPLOYEE]})
-    roles: Role[];
+  @Exclude()
+  @Column()
+  password: string;
 
-    @ManyToMany(()=> Team, team => team.members, { onDelete: 'CASCADE'})
-    teams: Team[];
+  @Column({ type: 'enum', enum: Role, array: true, default: [Role.EMPLOYEE] })
+  roles: Role[];
+
+  @OneToMany(
+    () => WorkflowToManagers,
+    (workflowsToManagers) => workflowsToManagers.manager,
+  )
+  workflowsToManagers: WorkflowToManagers[];
+
+  @ManyToMany(() => Team, (team) => team.members, { onDelete: 'CASCADE' })
+  teams: Team[];
 }

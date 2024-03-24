@@ -10,6 +10,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { TeamsModule } from './teams/teams.module';
 import { AuthModule } from './auth/auth.module';
+import { WorkflowsModule } from './workflows/workflows.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { AuthModule } from './auth/auth.module';
     ProjectsModule,
     UsersModule,
     TeamsModule,
-    AuthModule
+    AuthModule,
+    WorkflowsModule
   ],
   controllers: [AppController],
   providers: [AppService],
