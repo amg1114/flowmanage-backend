@@ -38,15 +38,14 @@ export class WorkflowsService {
     }
 
     async findByManager(manager_id: number) {
-        const workflows = this.workflowsRepository.findAndCount({
+        const workflows = this.workflowsRepository.find({
             where: {
                 workflowsToManagers: {
                     manager: {
                         id: manager_id,
                     },
                 },
-            },
-            relations: ['workflowsToManagers'],
+            }
         });
 
         return workflows;

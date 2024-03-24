@@ -6,21 +6,23 @@ import { UsersService } from 'src/users/users.service';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
-
 @Injectable()
 export class AuthService {
-    constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService) { }
+    constructor(
+        private readonly usersService: UsersService,
+        private readonly jwtService: JwtService,
+    ) {}
 
     async login(userFields: LoginRequestDto) {
         const user = await this.usersService.findByEmail(userFields.email);
 
-        if (!await bcrypt.compare(userFields.password, user.password)) {
+        if (!(await bcrypt.compare(userFields.password, user.password))) {
             throw new HttpException('Invalid credentials', HttpStatus.CONFLICT);
         }
 
         const payload = { sub: user.id, username: user.email };
         return {
-            access_token: await this.jwtService.signAsync(payload)
+            access_token: await this.jwtService.signAsync(payload),
         };
     }
 
@@ -28,10 +30,17 @@ export class AuthService {
         try {
             const user = await this.usersService.findByEmail(userFields.email);
             if (user) {
-                throw new HttpException('User already exists', HttpStatus.CONFLICT);
+                throw new HttpException(
+                    'User already exists',
+                    HttpStatus.CONFLICT,
+                );
             }
-        }catch{
+        } catch {
             return this.usersService.create(userFields);
         }
+    }
+
+    getUser(id: number) {
+        return this.usersService.findOne(id);
     }
 }
