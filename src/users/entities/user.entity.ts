@@ -21,9 +21,6 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Column({ type: 'enum', enum: Role, array: true, default: [Role.EMPLOYEE] })
-  roles: Role[];
-
   @OneToMany(
     () => WorkflowToManagers,
     (workflowsToManagers) => workflowsToManagers.manager,

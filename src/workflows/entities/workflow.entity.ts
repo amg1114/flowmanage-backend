@@ -2,6 +2,7 @@ import { BaseEntity } from 'src/common/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { WorkflowToManagers } from './workflow-manager.entity';
+import { Team } from 'src/teams/entities/team.entity';
 
 @Entity('workflows')
 export class Workflow extends BaseEntity {
@@ -19,4 +20,7 @@ export class Workflow extends BaseEntity {
     (workflowsToManagers) => workflowsToManagers.workflow,
   )
   workflowsToManagers: WorkflowToManagers[];
+
+  @OneToMany(()=>Team, team=>team.workflow)
+  teams: Team[];
 }
