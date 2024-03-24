@@ -1,11 +1,4 @@
-import {
-    IsInt,
-    IsNotEmpty,
-    IsObject,
-    IsOptional,
-    IsString,
-    isNumber,
-} from 'class-validator';
+import { IsInt, IsNotEmpty, IsObject } from 'class-validator';
 
 export class CreateWorkflowDto {
     @IsInt()

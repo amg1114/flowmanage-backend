@@ -7,24 +7,25 @@ import { Project } from 'src/projects/entities/project.entity';
 
 @Entity('workflows')
 export class Workflow extends BaseEntity {
-  @Column()
-  title: string;
+    @Column()
+    title: string;
 
-  @Column({ unique: true })
-  slug: string;
+    @Column({ unique: true })
+    slug: string;
 
-  @Column({ type: 'text', nullable: true })
-  description: string;
+    @Column({ type: 'text', nullable: true })
+    description: string;
 
-  @OneToMany(
-    () => WorkflowToManagers,
-    (workflowsToManagers) => workflowsToManagers.workflow,
-  )
-  workflowsToManagers: WorkflowToManagers[];
+    @OneToMany(
+        () => WorkflowToManagers,
+        (workflowsToManagers) => workflowsToManagers.workflow,
+        { onDelete: 'CASCADE' },
+    )
+    workflowsToManagers: WorkflowToManagers[];
 
-  @OneToMany(() => Team, (team) => team.workflow)
-  teams: Team[];
+    @OneToMany(() => Team, (team) => team.workflow, { onDelete: 'CASCADE' })
+    teams: Team[];
 
-  @OneToMany(() => Project, (project) => project.workflow)
-  projects: Project[];
+    @OneToMany(() => Project, (project) => project.workflow)
+    projects: Project[];
 }

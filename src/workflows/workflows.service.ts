@@ -21,9 +21,40 @@ export class WorkflowsService {
         private readonly usersService: UsersService,
     ) {}
 
+    async findBySlug(slug: string) {
+        const workflow = await this.workflowsRepository.findOne({
+            where: { slug },
+            relations: ['workflowsToManagers'],
+        });
+
+        if (!workflow) {
+            throw new HttpException(
+                'Workflow was not found',
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        return workflow;
+    }
+
+    async findByManager(manager_id: number) {
+        const workflows = this.workflowsRepository.findAndCount({
+            where: {
+                workflowsToManagers: {
+                    manager: {
+                        id: manager_id,
+                    },
+                },
+            },
+            relations: ['workflowsToManagers'],
+        });
+
+        return workflows;
+    }
+
     async create({ manager_id, workflowFields }: CreateWorkflowDto) {
         const manager = await this.usersService.findOne(manager_id);
-        const slug = slugify(workflowFields.title);
+        const slug = slugify(workflowFields.title, { lower: true });
         const alreadyExists: boolean = await this.workflowsRepository.exists({
             where: { slug },
         });
@@ -47,18 +78,34 @@ export class WorkflowsService {
         });
     }
 
-    async getByManager(manager_id: number) {
-        const workflows = this.workflowsRepository.findAndCount({
-            where: {
-                workflowsToManagers: {
-                    manager: {
-                        id: manager_id,
-                    },
-                },
-            },
-            relations: ['workflowsToManagers'],
+    async update(slug: string, workflowFields: any) {
+        const updateResult = await this.workflowsRepository.update(
+            { slug },
+            workflowFields,
+        );
+
+        if (updateResult.affected === 0) {
+            throw new HttpException(
+                'Workflow was not found',
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        return updateResult;
+    }
+
+    async delete(slug: string) {
+        const deleteResult = await this.workflowsRepository.delete({
+            slug,
         });
 
-        return workflows;
+        if (deleteResult.affected === 0) {
+            throw new HttpException(
+                'Workflow was not found',
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        return deleteResult;
     }
 }

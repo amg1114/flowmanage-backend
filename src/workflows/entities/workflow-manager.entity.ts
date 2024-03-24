@@ -8,9 +8,9 @@ export class WorkflowToManagers extends BaseEntity {
   @Column({ default: false, type: 'bool' })
   isCreator: boolean;
 
-  @ManyToOne(() => User, (user) => user.workflowsToManagers)
+  @ManyToOne(() => User, (user) => user.workflowsToManagers,  { onDelete: 'SET NULL' })
   public manager: User;
 
-  @ManyToOne(() => Workflow, (workflow) => workflow.workflowsToManagers)
+  @ManyToOne(() => Workflow, (workflow) => workflow.workflowsToManagers,  { onDelete: 'CASCADE' })
   public workflow: User;
 }
