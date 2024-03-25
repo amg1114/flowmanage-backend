@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class CreateWorkflowDto {
+export class UpdateWorkflowDto {
     @IsString()
     @IsOptional()
     title?: string;

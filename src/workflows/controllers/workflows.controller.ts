@@ -12,33 +12,28 @@ export class WorkflowsController {
         private readonly statusService: StatusService,
     ) {}
 
-    @Get('manager/:managerId')
-    getManagerWorkflows(@Param('managerId') managerId: number) {
-        return this.workflowsService.findByManager(+managerId);
+    @Get(':manager')
+    getManagerWorkflows(@Param('manager') manager: number) {
+        return this.workflowsService.getManagerWorkflows(+manager);
     }
 
-    @Get('manager/:managerId/:slug')
-    getOne(@Param('managerId') manager_id: string, @Param('slug') slug: string) {
-        return this.workflowsService.findBySlug(+manager_id, slug);
+    @Get(':manager/:workflow')
+    getOne(@Param('manager') manager: number, @Param('workflow') workflow: string) {
+        return this.workflowsService.getManagerWorkflow(+manager, workflow);
     }
 
-    @Get(':slug/statuses')
-    getWorkflowStatuses(@Param('slug') workflow_slug: string, @Query('limit') limit) {
-        return this.statusService.getWorkflowStatuses(workflow_slug, limit);
+    @Post(':manager')
+    create(@Param('manager') manager: number, @Body() createWorkflowDto: CreateWorkflowDto) {
+        return this.workflowsService.createManagerWorkflow(+manager, createWorkflowDto);
     }
 
-    @Post()
-    create(@Body() createWorkflowDto: CreateWorkflowDto) {
-        return this.workflowsService.create(createWorkflowDto);
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() workflowFields: any) {
+        return this.workflowsService.updateWorkflow(+id, workflowFields);
     }
 
-    @Patch(':slug')
-    update(@Param('slug') slug: string, @Body() workflowFields: any) {
-        return this.workflowsService.update(slug, workflowFields);
-    }
-
-    @Delete(':slug')
-    delete(@Param('slug') slug: string) {
-        return this.workflowsService.delete(slug);
+    @Delete(':id')
+    delete(@Param('id') id: string) {
+        return this.workflowsService.deleteWorkflow(+id);
     }
 }
