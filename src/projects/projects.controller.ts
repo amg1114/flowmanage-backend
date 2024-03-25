@@ -46,28 +46,4 @@ export class ProjectsController {
     async deleteProject(@Param('slug') slug: string) {
         return this.projectsService.deleteProject(slug);
     }
-
-    // Task CRUD operations
-    @Get(':slug/tasks')
-    async findProjectTasks(@Param('slug') slug: string) {
-        return this.projectsService.findProjectTasks(slug);
-    }
-
-    @Roles(Role.ADMIN, Role.MANAGER)
-    @Post(':slug/tasks')
-    async createTask(@Param('slug') slug: string, @Body() taskFields: CreateTaskDto) {
-        return this.projectsService.createTask(slug, taskFields);
-    }
-
-    @Roles(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE)
-    @Patch(':slug/tasks/:taskId')
-    async updateTask(@Param('taskId') projectId: number, @Param('taskId') taskId: number, @Body() taskFields: UpdateTaskDto) {
-        return this.projectsService.updateTask(projectId, taskId, taskFields);
-    }
-
-    @Roles(Role.ADMIN, Role.MANAGER)
-    @Delete('tasks/:taskId')
-    async deleteTask(@Param('taskId') id: number) {
-        return this.projectsService.deleteTask(id);
-    }
 }

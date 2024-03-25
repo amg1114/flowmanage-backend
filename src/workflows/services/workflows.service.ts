@@ -4,10 +4,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import slugify from 'slugify';
 
-import { Workflow } from './entities/workflow.entity';
-import { CreateWorkflowDto } from './dto/create-workflow.dto';
+import { Workflow } from '../entities/workflow.entity';
+import { CreateWorkflowDto } from '../dto/create-workflow.dto';
 import { UsersService } from 'src/users/users.service';
-import { WorkflowToManagers } from './entities/workflow-manager.entity';
+import { WorkflowToManagers } from '../entities/workflow-manager.entity';
 
 @Injectable()
 export class WorkflowsService {

@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { UsersModule } from 'src/users/users.module';
+
 import { Workflow } from './entities/workflow.entity';
 import { WorkflowToManagers } from './entities/workflow-manager.entity';
-import { WorkflowsController } from './workflows.controller';
-import { WorkflowsService } from './workflows.service';
-import { UsersModule } from 'src/users/users.module';
+import { WorkflowsController } from './controllers/workflows.controller';
+import { WorkflowsService } from './services/workflows.service';
+
 import { Status } from './entities/status.entity';
+import { StatusService } from './services/status.service';
 
 @Module({
     imports: [
@@ -13,6 +17,6 @@ import { Status } from './entities/status.entity';
         UsersModule,
     ],
     controllers: [WorkflowsController],
-    providers: [WorkflowsService],
+    providers: [WorkflowsService, StatusService],
 })
 export class WorkflowsModule {}
