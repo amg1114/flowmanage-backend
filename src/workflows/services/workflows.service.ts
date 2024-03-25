@@ -33,10 +33,7 @@ export class WorkflowsService {
         });
 
         if (!workflow) {
-            throw new HttpException(
-                'Workflow was not found',
-                HttpStatus.NOT_FOUND,
-            );
+            throw new HttpException('Workflow was not found', HttpStatus.NOT_FOUND);
         }
 
         return workflow;
@@ -56,6 +53,20 @@ export class WorkflowsService {
         return workflows;
     }
 
+    async findById(id: number) {
+        const workflow = await this.workflowsRepository.findOne({
+            where: {
+                id,
+            },
+        });
+
+        if (!workflow) {
+            throw new HttpException('Workflow was not found', HttpStatus.NOT_FOUND);
+        }
+
+        return workflow;
+    }
+
     async create({ manager_id, workflowFields }: CreateWorkflowDto) {
         const manager = await this.usersService.findOne(manager_id);
         const slug = slugify(workflowFields.title, { lower: true });
@@ -64,10 +75,7 @@ export class WorkflowsService {
         });
 
         if (alreadyExists) {
-            throw new HttpException(
-                'Workflow already exists',
-                HttpStatus.CONFLICT,
-            );
+            throw new HttpException('Workflow already exists', HttpStatus.CONFLICT);
         }
 
         const workflow = await this.workflowsRepository.save({
@@ -83,16 +91,10 @@ export class WorkflowsService {
     }
 
     async update(slug: string, workflowFields: any) {
-        const updateResult = await this.workflowsRepository.update(
-            { slug },
-            workflowFields,
-        );
+        const updateResult = await this.workflowsRepository.update({ slug }, workflowFields);
 
         if (updateResult.affected === 0) {
-            throw new HttpException(
-                'Workflow was not found',
-                HttpStatus.NOT_FOUND,
-            );
+            throw new HttpException('Workflow was not found', HttpStatus.NOT_FOUND);
         }
 
         return updateResult;
@@ -104,10 +106,7 @@ export class WorkflowsService {
         });
 
         if (deleteResult.affected === 0) {
-            throw new HttpException(
-                'Workflow was not found',
-                HttpStatus.NOT_FOUND,
-            );
+            throw new HttpException('Workflow was not found', HttpStatus.NOT_FOUND);
         }
 
         return deleteResult;

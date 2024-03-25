@@ -1,13 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Project } from './entities/project.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+
+import slugify from 'slugify';
+
+import { WorkflowsService } from 'src/workflows/services/workflows.service';
+
+import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Task } from './entities/task.entity';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 /**
@@ -17,144 +18,92 @@ export class ProjectsService {
     constructor(
         @InjectRepository(Project)
         private readonly projectsRepository: Repository<Project>,
-        @InjectRepository(Task)
-        private readonly tasksRepository: Repository<Task>
-    ) {
-    }
-
-    // Porject CRUD operations
+        private readonly workflowsService: WorkflowsService,
+    ) {}
 
     /**
-     * Creates a new project.
-     * @param project - The project data.
-     * @returns A promise that resolves to the created project.
-     * @throws HttpException with HttpStatus.CONFLICT if the project already exists.
+     * Finds a list of project based on the given workflow id.
+     * @param workflow The workflow's id
      */
-    async createProject(project: CreateProjectDto): Promise<Project> {
-        const slug = slugify(project.title, { lower: true });
-        const projectExists = await this.projectsRepository.findOne({ where: { slug } });
+    public async getWorkflowProjects(workflow: number): Promise<Project[]> {
+        const projects = await this.projectsRepository.find({
+            where: {
+                workflow: { id: workflow },
+            },
+        });
 
-        if (projectExists) {
+        if (!projects.length) {
+            throw new HttpException('No projects founded for the given workflow', HttpStatus.NOT_FOUND);
+        }
+
+        return projects;
+    }
+
+    /**
+     * Finds a project based on the given workflow and the project slug
+     * @param workflow The workflow's id
+     * @param slug The project slug
+     * @returns Project
+     */
+    public async getProject(workflow: number, slug: string): Promise<Project> {
+        const project = await this.projectsRepository.findOne({
+            where: {
+                workflow: { id: workflow },
+                slug,
+            },
+        });
+
+        if (!project) {
+            throw new HttpException('The given project was not found', HttpStatus.NOT_FOUND);
+        }
+
+        return project;
+    }
+
+    /**
+     * Creates a new project
+     * @param workflow The workflow's ID
+     * @param projectFields The project Field
+     * @returns The new project
+     */
+    public async createProject(workflow: number, projectFields: CreateProjectDto) {
+        const project_slug = slugify(projectFields.title, { lower: true });
+        const project_workflow = await this.workflowsService.findById(workflow);
+        const alreadyExists = await this.projectsRepository.exists({ where: { slug: project_slug, workflow: project_workflow } });
+
+        if (alreadyExists) {
             throw new HttpException('Project already exists', HttpStatus.CONFLICT);
         }
 
-        const newProject = this.projectsRepository.create({ ...project, slug });
-        return this.projectsRepository.save(newProject);
+        return this.projectsRepository.save({ ...projectFields, slug: project_slug, workflow: project_workflow });
     }
 
     /**
-     * Retrieves all projects.
-     * @returns A promise that resolves to an array of projects.
+     * Updates a project
+     * @param id The project ID
+     * @param projectFields The updated project fields
+     * @returns Update Result
      */
-    findAllProjects(): Promise<Project[]> {
-        return this.projectsRepository.find();
+    public async updateProject(id: number, projectFields: UpdateProjectDto) {
+        const updateResult = await this.projectsRepository.update(id, projectFields);
+        if (updateResult.affected === 0) {
+            throw new HttpException('The project could not be updated', HttpStatus.CONFLICT);
+        }
+
+        return updateResult;
     }
 
     /**
-     * Retrieves a project by its id.
-     * @param id - The project id.
-     * @returns A promise that resolves to the project.
-     * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
+     * Deletes a project
+     * @param id The project ID
+     * @returns Delete Result
      */
-    async findProjectById(id: number): Promise<Project> {
-        const project = await this.projectsRepository.findOne({ where: { id } });
-
-        if (!project) {
-            throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+    public async deleteProject(id: number) {
+        const deleteResult = await this.projectsRepository.delete(id);
+        if (deleteResult.affected === 0) {
+            throw new HttpException('The project could not be deleted', HttpStatus.CONFLICT);
         }
 
-        return project;
-    }
-
-    /**
-     * Retrieves a project by its slug.
-     * @param slug - The project slug.
-     * @returns A promise that resolves to the project.
-     * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
-     */
-    async findProjectBySlug(slug: string): Promise<Project> {
-        const project = await this.projectsRepository.findOne({ where: { slug }, relations: ['tasks', 'team'] });
-
-        if (!project) {
-            throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
-        }
-
-        return project;
-    }
-
-    /**
-     * Updates a project.
-     * @param slug - The project slug.
-     * @param project - The project data.
-     * @returns A promise that resolves to the updated project.
-     * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
-     */
-    async updateProject(slug: string, project: UpdateProjectDto): Promise<UpdateResult> {
-        const projectExists = await this.projectsRepository.findOne({ where: { slug } });
-        if (!projectExists) {
-            throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
-        }
-
-        const updatedProject = await this.projectsRepository.update({ slug }, project);
-        return updatedProject;
-    }
-
-    /**
-     * Deletes a project.
-     * @param slug - The project slug.
-     * @returns A promise that resolves to the deleted project.
-     * @throws HttpException with HttpStatus.NOT_FOUND if the project does not exist.
-     */
-    async deleteProject(slug: string): Promise<Project> {
-        const project = await this.projectsRepository.findOne({ where: { slug } });
-        if (!project) {
-            throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
-        }
-
-        await this.projectsRepository.delete({ slug });
-        return project;
-    }
-
-    // Project tasks operations
-
-    async createTask(slug: string, taskFields: CreateTaskDto): Promise<Task> {
-        const project = await this.findProjectBySlug(slug);
-        const newTask = this.tasksRepository.create({ ...taskFields, project });
-
-        return this.tasksRepository.save(newTask);
-    }
-
-    async findProjectTasks(slug: string): Promise<Task[]> {
-        const project = await this.findProjectBySlug(slug);
-
-        return project.tasks;
-    }
-
-    async findTaskById(id: number): Promise<Task> {
-        const task = await this.tasksRepository.findOne({ where: { id } });
-
-        if (!task) {
-            throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
-        }
-
-        return task;
-    }
-
-    async updateTask(projectId: number, taskId: number, taskFields: UpdateTaskDto): Promise<UpdateResult> {
-        const task = await this.tasksRepository.findOne({ where: { id: taskId, project: { id: projectId } } });
-        if (!task) {
-            throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
-        }
-        return this.tasksRepository.update({ id: taskId }, taskFields);
-    }
-
-    async deleteTask(id: number): Promise<DeleteResult> {
-        const task = await this.tasksRepository.delete(id);
-        if (task.affected === 0) {
-            throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
-        }
-
-        return task;
+        return deleteResult;
     }
 }
-

@@ -10,7 +10,7 @@ export class Project extends BaseEntity {
   @Column()
   title: string;
 
-  @Column({ unique: true })
+  @Column()
   slug: string;
 
   @Column({ type: 'text', nullable: true })

@@ -18,5 +18,6 @@ import { StatusService } from './services/status.service';
     ],
     controllers: [WorkflowsController],
     providers: [WorkflowsService, StatusService],
+    exports:[WorkflowsService,TypeOrmModule]
 })
 export class WorkflowsModule {}

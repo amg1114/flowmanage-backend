@@ -27,8 +27,8 @@ export class AccessGuard implements CanActivate {
             if (request.url.includes('teams')) {
                 isMember = user.teams.some((team: Team) => team.slug === params.slug);
             } else if (request.url.includes('projects')) {
-                const project: Project = await this.projectsService.findProjectBySlug(params.slug);
-                isMember = user.teams.some((team: Team) => team.id === project.team.id);
+                /* const project: Project = await this.projectsService.findProjectBySlug(params.slug);
+                isMember = user.teams.some((team: Team) => team.id === project.team.id); */
             }
 
             return isMember;

@@ -3,47 +3,33 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/common/enums/user-roles';
-import { AccessGuard } from 'src/auth/guards/access.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('projects')
-@UseGuards(RolesGuard, AccessGuard)
 export class ProjectsController {
-    constructor(private readonly projectsService: ProjectsService) {
+    constructor(private readonly projectsService: ProjectsService) {}
+
+    @Get(':workflow')
+    async findAllProjects(@Param('workflow') workflow: string) {
+        return this.projectsService.getWorkflowProjects(+workflow);
     }
 
-    // Project CRUD operations
-    @Get()
-    @Roles(Role.ADMIN)
-    async findAllProjects() {
-        return this.projectsService.findAllProjects();
+    @Get(':workflow/:project')
+    async findProjectBySlug(@Param('workflow') workflow: string, @Param('project') project: string) {
+        return this.projectsService.getProject(+workflow, project);
     }
 
-    @Get(':slug')
-    async findProjectBySlug(@Param('slug') slug: string) {
-        return this.projectsService.findProjectBySlug(slug);
+    @Post(':workflow')
+    async createProject(@Param('workflow') workflow: string, @Body() projectFields: CreateProjectDto) {
+        return this.projectsService.createProject(+workflow, projectFields);
     }
 
-    @Roles(Role.ADMIN)
-    @Post()
-    async createProject(@Body() projectFields: CreateProjectDto) {
-        return this.projectsService.createProject(projectFields);
+    @Patch(':id')
+    async updateProject(@Param('id') id: string, @Body() projectFields: UpdateProjectDto) {
+        return `Update project with ID: ${id}`;
     }
 
-    @Roles(Role.ADMIN, Role.MANAGER)
-    @Patch(':slug')
-    async updateProject(@Param('slug') slug: string, @Body() projectFields: UpdateProjectDto) {
-        return this.projectsService.updateProject(slug, projectFields);
-    }
-
-    @Roles(Role.ADMIN)
-    @Delete(':slug')
-    async deleteProject(@Param('slug') slug: string) {
-        return this.projectsService.deleteProject(slug);
+    @Delete(':id')
+    async deleteProject(@Param('id') id: string) {
+        return `Delete project with ID: ${id}`;
     }
 }
