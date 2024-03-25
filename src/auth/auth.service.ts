@@ -20,7 +20,7 @@ export class AuthService {
             throw new HttpException('Invalid credentials', HttpStatus.CONFLICT);
         }
 
-        const payload = { sub: user.id, username: user.email };
+        const payload = { sub: user.id, email: user.email };
         return {
             access_token: await this.jwtService.signAsync(payload),
         };
@@ -36,7 +36,12 @@ export class AuthService {
                 );
             }
         } catch {
-            return this.usersService.create(userFields);
+            const { email, password } = userFields;
+            await this.usersService.create(userFields);
+            return this.login({
+                email,
+                password,
+            });
         }
     }
 
