@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+} from '@nestjs/common';
 
 import { WorkflowsService } from './workflows.service';
 import { CreateWorkflowDto } from './dto/create-workflow.dto';
@@ -7,9 +15,12 @@ import { CreateWorkflowDto } from './dto/create-workflow.dto';
 export class WorkflowsController {
     constructor(private readonly workflowsService: WorkflowsService) {}
 
-    @Get(':slug')
-    getOne(@Param('slug') slug: string) {
-        return this.workflowsService.findBySlug(slug);
+    @Get(':managerId/:slug')
+    getOne(
+        @Param('managerId') manager_id: string,
+        @Param('slug') slug: string,
+    ) {
+        return this.workflowsService.findBySlug(+manager_id, slug);
     }
 
     @Get('manager/:managerId')
@@ -28,7 +39,7 @@ export class WorkflowsController {
     }
 
     @Delete(':slug')
-    delete(@Param('slug') slug: string){
-        return this.workflowsService.delete(slug)
+    delete(@Param('slug') slug: string) {
+        return this.workflowsService.delete(slug);
     }
 }

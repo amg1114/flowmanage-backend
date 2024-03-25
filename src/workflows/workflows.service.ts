@@ -21,9 +21,14 @@ export class WorkflowsService {
         private readonly usersService: UsersService,
     ) {}
 
-    async findBySlug(slug: string) {
+    async findBySlug(manager_id: number, slug: string) {
         const workflow = await this.workflowsRepository.findOne({
-            where: { slug },
+            where: {
+                slug,
+                workflowsToManagers: {
+                    manager: { id: manager_id },
+                },
+            },
             relations: ['workflowsToManagers'],
         });
 
@@ -45,7 +50,7 @@ export class WorkflowsService {
                         id: manager_id,
                     },
                 },
-            }
+            },
         });
 
         return workflows;
