@@ -69,7 +69,7 @@ export class ProjectsService {
     public async createProject(workflow: number, projectFields: CreateProjectDto) {
         const project_slug = slugify(projectFields.title, { lower: true });
         const project_workflow = await this.workflowsService.findById(workflow);
-        const alreadyExists = await this.projectsRepository.exists({ where: { slug: project_slug, workflow: project_workflow } });
+        const alreadyExists = await this.projectsRepository.exists({ where: { slug: project_slug, workflow:{ id: project_workflow.id } } });
 
         if (alreadyExists) {
             throw new HttpException('Project already exists', HttpStatus.CONFLICT);

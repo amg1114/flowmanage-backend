@@ -71,7 +71,7 @@ export class WorkflowsService {
         const manager = await this.usersService.findOne(manager_id);
         const slug = slugify(workflowFields.title, { lower: true });
         const alreadyExists: boolean = await this.workflowsRepository.exists({
-            where: { slug },
+            where: { slug, workflowsToManagers: { manager } },
         });
 
         if (alreadyExists) {
