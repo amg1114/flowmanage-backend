@@ -10,13 +10,14 @@ import { WorkflowsService } from './services/workflows.service';
 
 import { Status } from './entities/status.entity';
 import { StatusService } from './services/status.service';
+import { StatusController } from './controllers/status.controller';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Workflow, Status, WorkflowToManagers]),
         UsersModule,
     ],
-    controllers: [WorkflowsController],
+    controllers: [StatusController, WorkflowsController],
     providers: [WorkflowsService, StatusService],
     exports:[WorkflowsService,TypeOrmModule]
 })

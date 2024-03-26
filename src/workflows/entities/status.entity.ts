@@ -15,6 +15,9 @@ export class Status extends BaseEntity {
     @Column({ type: 'enum', enum: StatusState, default: StatusState.UNSTARTED })
     state: StatusState;
 
+    @Column({ type: 'int', default: 0 })
+    order: number;
+
     @ManyToOne(() => Workflow, (workflow) => workflow.statuses)
     workflow: Workflow;
 

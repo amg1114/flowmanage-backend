@@ -22,6 +22,6 @@ export class Project extends BaseEntity {
   @ManyToOne(()=> Team, team => team.projects)
   team: Team;
 
-  @ManyToOne(()=>Workflow, workflow=>workflow.projects)
+  @ManyToOne(()=>Workflow, workflow=>workflow.projects, { onDelete: 'CASCADE' })
   workflow: Workflow;
 }

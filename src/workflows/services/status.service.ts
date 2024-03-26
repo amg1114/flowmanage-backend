@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Status } from '../entities/status.entity';
 import { Repository } from 'typeorm';
+import { StatusQueryParams } from '../interfaces/status-query-params.interface';
 
 @Injectable()
 export class StatusService {
@@ -10,13 +11,13 @@ export class StatusService {
         private readonly statusRepository: Repository<Status>,
     ) {}
 
-    async getWorkflowStatuses(workflow_slug: string, limit: number | undefined) {
+    async getWorkflowStatuses(workflow: number, queries: StatusQueryParams) {
         const status = await this.statusRepository.find({
             where: {
-                workflow: { slug: workflow_slug },
+                workflow: { id: workflow },
+                state: queries?.type,
             },
-            relations: ['tasks'],
-            take: limit,
+            relations: ['tasks', 'tasks.project', 'tasks.project.team'],
         });
 
         if (status.length === 0) {

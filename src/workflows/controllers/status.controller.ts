@@ -1,12 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { StatusService } from '../services/status.service';
+import { StatusQueryParams } from '../interfaces/status-query-params.interface';
 
-@Controller('workflows')
+@Controller('workflows/statuses')
 export class StatusController {
     constructor(private readonly statusService: StatusService) {}
 
-    @Get(':slug/statuses')
-    getWorkflowStatuses(@Param('slug') workflow_slug: string, @Query('limit') limit) {
-        return this.statusService.getWorkflowStatuses(workflow_slug, limit)
+    @Get(':workflow')
+    getWorkflowStatuses(@Param('workflow', ParseIntPipe) workflow: number, @Query() queryParams: StatusQueryParams) {
+        return this.statusService.getWorkflowStatuses(workflow, queryParams)
     }
 }
