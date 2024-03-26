@@ -11,52 +11,65 @@ import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TeamsService {
-  constructor(
-    @InjectRepository(Team)
-    private readonly teamRepository: Repository<Team>,
-    private readonly usersService: UsersService
-  ) { }
+    constructor(
+        @InjectRepository(Team)
+        private readonly teamRepository: Repository<Team>,
+        private readonly usersService: UsersService,
+    ) {}
 
-  async createTeam(createTeamDto: CreateTeamDto) {
-    const slug = slugify(createTeamDto.name, { lower: true });
-    const team = await this.teamRepository.findOne({ where: { slug } });
-    if (team) {
-      throw new HttpException('Team already exists', HttpStatus.CONFLICT);
-    }
-    return this.teamRepository.save({ ...createTeamDto, slug });
-  }
+    public async getUserTeams(user: number) {
+        const teams = await this.teamRepository.find({
+            where: {
+                teamsToUsers: { user: { id: user } },
+            },
+        });
 
-  findAllTeams() {
-    return this.teamRepository.find({ relations: ['members'] });
-  }
+        if (!teams.length) {
+            throw new HttpException('No teams found for the given user', HttpStatus.NOT_FOUND);
+        }
 
-  async findOneTeam(slug: string): Promise<Team> {
-    const team = await this.teamRepository.findOne({ where: { slug } });
-    if (!team) {
-      throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
-    }
-    return team;
-  }
-
-  async updateTeam(slug: string, updateTeamDto: UpdateTeamDto): Promise<UpdateResult> {
-    const team = await this.teamRepository.findOne({ where: { slug } });
-    if (!team) {
-      throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
-    }
-    return this.teamRepository.update(team.id, updateTeamDto);
-  }
-
-  async deleteTeam(slug: string): Promise<DeleteResult> {
-    const team = await this.teamRepository.findOne({ where: { slug } });
-    if (!team) {
-      throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
+        return teams;
     }
 
-    return this.teamRepository.delete(team.id);
-  }
+    public async createWorkflowTeam(workflow: number, teamFields: CreateTeamDto) {
+        const slug = slugify(teamFields.name, { lower: true });
+        const alreadyExists = await this.teamRepository.exists({
+            where: { workflow: { id: workflow }, slug },
+        });
 
-  // Members related methods
-  async addTeamMember({ teamId, userId }: AddMemberDto) {
-    // To Do
-  }
+        if (alreadyExists) {
+            throw new HttpException('Teams already exists', HttpStatus.CONFLICT);
+        }
+
+        return this.teamRepository.save({ ...teamFields, slug, workflow: { id: workflow } });
+    }
+
+    /**
+     * Updates a team
+     * @param id The team ID
+     * @param teamFields The updated team fields
+     * @returns Update Result
+     */
+    public async updateTeam(id: number, teamFields: UpdateTeamDto) {
+        const updateResult = await this.teamRepository.update(id, teamFields);
+        if (updateResult.affected === 0) {
+            throw new HttpException('The team could not be updated', HttpStatus.CONFLICT);
+        }
+
+        return updateResult;
+    }
+
+    /**
+     * Deletes a team
+     * @param id The team ID
+     * @returns Delete Result
+     */
+    public async deleteTeam(id: number) {
+        const deleteResult = await this.teamRepository.delete(id);
+        if (deleteResult.affected === 0) {
+            throw new HttpException('The project could not be deleted', HttpStatus.CONFLICT);
+        }
+
+        return deleteResult;
+    }
 }

@@ -1,51 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
-import { AddMemberDto } from './dto/add-member.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Role } from 'src/common/enums/user-roles';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { AccessGuard } from 'src/auth/guards/access.guard';
 
 @Controller('teams')
-@UseGuards(RolesGuard, AccessGuard)
 export class TeamsController {
-  constructor(private readonly teamsService: TeamsService) {}
+    constructor(private readonly teamsService: TeamsService) {}
 
-  @Roles(Role.ADMIN)
-  @Post()
-  create(@Body() createTeamDto: CreateTeamDto) {
-    return this.teamsService.createTeam(createTeamDto);
-  }
-  
-  @Roles(Role.ADMIN, Role.MANAGER)
-  @Post('members')
-  addMember(@Body() addMemberDto: AddMemberDto) {
-    return this.teamsService.addTeamMember(addMemberDto);
-  }
-  
-  @Roles(Role.ADMIN)
-  @Get()
-  findAll() {
-    return this.teamsService.findAllTeams();
-  }
-  
-  @Roles(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE)
-  @Get(':slug')
-  findOne(@Param('slug') slug: string) {
-    return this.teamsService.findOneTeam(slug);
-  }
-  
-  @Roles(Role.ADMIN, Role.MANAGER)
-  @Patch(':slug')
-  update(@Param('slug') slug: string, @Body() updateTeamDto: UpdateTeamDto) {
-    return this.teamsService.updateTeam(slug, updateTeamDto);
-  }
-  
-  @Roles(Role.ADMIN)
-  @Delete(':slug')
-  remove(@Param('slug') slug: string) {
-    return this.teamsService.deleteTeam(slug);
-  }
+    @Get(':user')
+    getUserTeams(@Param('user', ParseIntPipe) user: number) {
+        return this.teamsService.getUserTeams(user);
+    }
+
+    @Post(':workflow')
+    createWorkflowTeam(@Param('workflow', ParseIntPipe) workflow: number, @Body() teamFields: CreateTeamDto) {
+        return this.teamsService.createWorkflowTeam(workflow, teamFields);
+    }
+
+    @Patch(':id')
+    updateTeam(@Param('id', ParseIntPipe) id: number, @Body() teamFields: UpdateTeamDto) {
+        return this.teamsService.updateTeam(id, teamFields);
+    }
+
+    @Delete(':id')
+    deleteTeam(@Param('id', ParseIntPipe) id: number) {
+        return this.teamsService.deleteTeam(id);
+    }
 }

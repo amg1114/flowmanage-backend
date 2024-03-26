@@ -25,11 +25,11 @@ export class ProjectsController {
 
     @Patch(':id')
     async updateProject(@Param('id') id: string, @Body() projectFields: UpdateProjectDto) {
-        return `Update project with ID: ${id}`;
+        return this.projectsService.updateProject(+id,projectFields);
     }
 
     @Delete(':id')
     async deleteProject(@Param('id') id: string) {
-        return `Delete project with ID: ${id}`;
+        return this.projectsService.deleteProject(+id);
     }
 }
